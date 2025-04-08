@@ -39,3 +39,6 @@
 !/app/assets/builds/.keep
 
 .editorconfig
+
+node_modules
+.yarn
