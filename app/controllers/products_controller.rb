@@ -19,6 +19,11 @@ class ProductsController < ApplicationController
   def edit
   end
 
+  def form
+    @product = params[:id].present? ? Product.find(params[:id]) : Product.new
+    render turbo_stream: turbo_stream.replace("product_form", partial: "form", locals: { product: @product })
+  end
+
   # POST /products or /products.json
   def create
     @product = Product.new(product_params)
