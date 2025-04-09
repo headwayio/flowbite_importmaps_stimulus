@@ -33,8 +33,9 @@ class ProductsController < ApplicationController
         format.html { redirect_to @product, notice: "Product was successfully created." }
         format.json { render :show, status: :created, location: @product }
       else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @product.errors, status: :unprocessable_entity }
+        format.turbo_stream {
+          render turbo_stream: turbo_stream.update("product_form_container", partial: "form", locals: { product: @product })
+        }
       end
     end
   end
