@@ -30,8 +30,12 @@ class ProductsController < ApplicationController
 
     respond_to do |format|
       if @product.save
-        format.html { redirect_to @product, notice: "Product was successfully created." }
-        format.json { render :show, status: :created, location: @product }
+        format.turbo_stream {
+          render turbo_stream: [
+            turbo_stream.append("products", partial: "product_row", locals: { product: @product }),
+            turbo_stream.hide_modal("createProductModal", clear_form: true),
+          ]
+        }
       else
         format.turbo_stream {
           render turbo_stream: turbo_stream.update("product_form_container", partial: "form", locals: { product: @product })
