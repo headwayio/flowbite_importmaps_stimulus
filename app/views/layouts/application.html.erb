@@ -22,8 +22,8 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-    <div class="antialiased bg-gray-50 dark:bg-gray-900">
+  <body class="bg-gray-50 height-screen dark:bg-gray-900">
+    <div class="antialiased bg-gray-50 height-screen dark:bg-gray-900">
       <nav
         class="bg-white border-b border-gray-200 px-4 py-2.5 dark:bg-gray-800 dark:border-gray-700 fixed lg:hidden left-0 right-0 top-0 z-50">
         <div class="flex flex-wrap justify-between items-center">
@@ -572,11 +572,7 @@
         </aside>
 
         <main class="dark:bg-gray-900 w-full flex-1 p-4 flex flex-col items-stretch h-full space-y-4 lg:mx-64 pt-20 lg:pt-4">
-          <div class="border-2 border-dashed border-gray-300 rounded-xl dark:border-gray-600 h-96"></div>
-          <div class="border-2 border-dashed border-gray-300 rounded-xl dark:border-gray-600 h-96"></div>
-          <div class="border-2 border-dashed border-gray-300 rounded-xl dark:border-gray-600 h-96"></div>
-          <div class="border-2 border-dashed border-gray-300 rounded-xl dark:border-gray-600 h-96"></div>
-          <div class="border-2 border-dashed border-gray-300 rounded-xl dark:border-gray-600 h-96"></div>
+          <%= yield %>
         </main>
 
         <aside
