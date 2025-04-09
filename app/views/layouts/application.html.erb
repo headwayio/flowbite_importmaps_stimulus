@@ -52,7 +52,9 @@
           </div>
           <div class="flex items-center lg:order-2">
             <!-- Notifications -->
-            <button type="button" data-dropdown-toggle="notification-dropdown"
+            <button type="button"
+              data-controller="flowbite--dropdown-trigger"
+              data-flowbite--dropdown-trigger-flowbite--dropdown-target-outlet="#notification-dropdown"
               class="p-2 mr-1 text-gray-500 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600">
               <span class="sr-only">View notifications</span>
               <!-- Bell icon -->
@@ -66,7 +68,9 @@
             <!-- Dropdown menu -->
             <div
               class="hidden overflow-hidden z-50 my-4 max-w-sm text-base list-none bg-white rounded divide-y divide-gray-100 shadow-lg dark:divide-gray-600 dark:bg-gray-700 rounded-xl"
-              id="notification-dropdown">
+              id="notification-dropdown"
+              data-controller="flowbite--dropdown-target"
+            >
               <div
                 class="block py-2 px-4 text-base font-medium text-center text-gray-700 bg-gray-50 dark:bg-gray-600 dark:text-gray-300">
                 Notifications
@@ -453,7 +457,9 @@
               Settings page
               <div class="tooltip-arrow" data-popper-arrow></div>
             </div>
-            <button type="button" data-dropdown-toggle="language-dropdown"
+            <button type="button"
+              data-controller="flowbite--dropdown-trigger"
+              data-flowbite--dropdown-trigger-flowbite--dropdown-target-outlet="#language-dropdown"
               class="inline-flex justify-center p-2 text-gray-500 rounded cursor-pointer dark:hover:text-white dark:text-gray-400 hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-600">
               <svg aria-hidden="true" class="h-5 w-5 rounded-full mt-0.5" xmlns="http://www.w3.org/2000/svg"
                 xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 3900 3900">
@@ -485,7 +491,8 @@
             <!-- Dropdown -->
             <div
               class="hidden z-50 my-4 text-base list-none bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700"
-              id="language-dropdown">
+              id="language-dropdown"
+              data-controller="flowbite--dropdown-target">
               <ul class="py-1" role="none">
                 <li>
                   <a href="#"
@@ -600,7 +607,9 @@
               <div class="flex items-center justify-center">
 
                 <!-- Apps -->
-                <button type="button" data-dropdown-toggle="apps-dropdown"
+                <button type="button"
+                  data-controller="flowbite--dropdown-trigger"
+                  data-flowbite--dropdown-trigger-flowbite--dropdown-target-outlet="#apps-dropdown"
                   class="cursor-pointer p-2 text-gray-500 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600">
                   <span class="sr-only">View notifications</span>
                   <!-- Icon -->
@@ -613,7 +622,8 @@
                 <!-- Dropdown menu -->
                 <div
                   class="hidden overflow-hidden w-80 z-50 my-4 max-w-sm text-base list-none bg-white divide-y divide-gray-100 shadow-lg dark:bg-gray-700 dark:divide-gray-600 rounded-xl"
-                  id="apps-dropdown">
+                  id="apps-dropdown"
+                  data-controller="flowbite--dropdown-target">
                   <div
                     class="block py-2 px-4 text-base font-medium text-center text-gray-700 bg-gray-50 dark:bg-gray-600 dark:text-gray-300">
                     Apps
@@ -729,7 +739,9 @@
                 </div>
 
                 <!-- Notifications -->
-                <button type="button" data-dropdown-toggle="notification-dropdown-sidebar"
+                <button type="button"
+                  data-controller="flowbite--dropdown-trigger"
+                  data-flowbite--dropdown-trigger-flowbite--dropdown-target-outlet="#notification-dropdown-sidebar"
                   class="cursor-pointer p-2 mr-1 text-gray-500 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600">
                   <span class="sr-only">View notifications</span>
                   <!-- Bell icon -->
@@ -743,7 +755,8 @@
                 <!-- Dropdown menu -->
                 <div
                   class="hidden overflow-hidden z-50 w-96 my-4 max-w-sm text-base list-none bg-white divide-y divide-gray-100 shadow-lg dark:divide-gray-600 dark:bg-gray-700 rounded-xl"
-                  id="notification-dropdown-sidebar">
+                  id="notification-dropdown-sidebar"
+                  data-controller="flowbite--dropdown-target">
                   <div
                     class="block py-2 px-4 text-base font-medium text-center text-gray-700 bg-gray-50 dark:bg-gray-600 dark:text-gray-300">
                     Notifications
@@ -906,7 +919,9 @@
                 </div>
 
                 <!-- Question Mark -->
-                <button type="button" data-dropdown-toggle="support-dropdown"
+                <button type="button"
+                  data-controller="flowbite--dropdown-trigger"
+                  data-flowbite--dropdown-trigger-flowbite--dropdown-target-outlet="#support-dropdown"
                   class="cursor-pointer p-2 mr-1 text-gray-500 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600">
                   <span class="sr-only">View support dropdown</span>
                   <!-- Bell icon -->
@@ -920,7 +935,8 @@
                 <!-- Dropdown menu -->
                 <div
                   class="hidden overflow-hidden z-50 w-64 my-4 max-w-sm text-base list-none bg-white divide-y divide-gray-100 shadow-lg dark:divide-gray-600 dark:bg-gray-700 rounded-xl"
-                  id="support-dropdown">
+                  id="support-dropdown"
+                  data-controller="flowbite--dropdown-target">
                   <div
                     class="block py-2 px-4 text-base font-medium text-center text-gray-700 bg-gray-50 dark:bg-gray-600 dark:text-gray-300">
                     Support
