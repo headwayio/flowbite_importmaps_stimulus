@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+// import getTargetIdFromOutlet from "controllers/mixins/get_target_id_from_outlet"
 
 // This controller handles passing product IDs to the update modal
 export default class extends Controller {
@@ -18,6 +19,10 @@ export default class extends Controller {
 
   handleModalWillOpen(event) {
     console.log("actionValue", this.actionValue)
+
+    // pull the outlet value from the element
+    // this.modalTarget = getTargetIdFromOutlet(this)
+    // console.log("modalTarget", this.modalTarget)
 
     let modalId;
     switch (this.actionValue) {
@@ -46,7 +51,10 @@ export default class extends Controller {
     console.log('LazyFrame component found:', lazyFrame)
     console.log('updating URL:', this.productPathValue)
 
-    // Update the LazyFrameComponent's URL param before it fetches the content using load_on: "visible"
-    lazyFrame.dataset.lazyFrameUrlValue = this.productPathValue
+    // // Update the LazyFrameComponent's URL param before it fetches the content using load_on: "visible"
+    //settimeout
+    setTimeout(() => {
+      lazyFrame.dataset.lazyFrameUrlValue = this.productPathValue
+    }, 500)
   }
 }

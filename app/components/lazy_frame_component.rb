@@ -1,7 +1,7 @@
 class LazyFrameComponent < ViewComponent::Base
   attr_reader :id, :url, :load_on, :loading_class
 
-  def initialize(id:, url:, load_on: "connect", loading_class: "animate-pulse bg-gray-200 rounded-md")
+  def initialize(id:, url: nil, load_on: "connect", loading_class: "animate-pulse bg-gray-200 rounded-md")
     @id = id
     @url = url
     @load_on = load_on

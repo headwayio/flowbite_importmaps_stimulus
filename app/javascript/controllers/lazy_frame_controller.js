@@ -31,6 +31,7 @@ export default class LazyFrameController extends Controller {
     }
 
     // Find the nearest modal container
+    // FIXME: may be too greedy in terms of finding the modal container
     this.modalContainer = this.element.closest('[data-controller~="flowbite--modal-target"]');
 
     if (this.modalContainer) {
@@ -40,11 +41,13 @@ export default class LazyFrameController extends Controller {
       // console.log("Added show event listener to modal", this.modalContainer.id);
     }
 
-    if (this.loadOnValue === "connect") {
-      this.load();
-    } else if (this.loadOnValue === "visible") {
-      this.setupIntersectionObserver();
-    }
+    // if (this.loadOnValue === "connect") {
+    //   this.setupLoad(() => {
+    //     this.load();
+    //   });
+    // } else if (this.loadOnValue === "visible") {
+    //   this.setupIntersectionObserver();
+    // }
     // "click" and "custom" are handled by the action attribute
   }
 
@@ -67,7 +70,9 @@ export default class LazyFrameController extends Controller {
     // clear frame content to avoid seeing stale data when loading the modal
     this.frameTarget.innerHTML = "";
 
-    this.reload();
+    this.setupLoad(() => {
+      this.reload();
+    });
   }
 
   setupIntersectionObserver() {
@@ -81,13 +86,33 @@ export default class LazyFrameController extends Controller {
       entries.forEach(entry => {
         if (entry.isIntersecting && !this.loadedValue) {
           // console.log("LazyFrameController: Element is visible, loading content");
-          this.load();
-          this.observer.disconnect();
+          this.setupLoad(() => {
+            this.load();
+            this.observer.disconnect();
+          });
         }
       });
     }, options);
 
     this.observer.observe(this.element);
+  }
+
+  // Ensure that the URL value is set before loading
+  setupLoad(callback) {
+    if (!this.urlValue) {
+      console.log("current url VALUE", this.element.dataset.lazyFrameUrlValue)
+      // NOTE: attempt to pull the URL value from the data attribute that can be
+      // set by a separate controller when the modal is shown by listening for
+      // the modal show event
+      setTimeout(() => {
+        this.urlValue = this.element.dataset.lazyFrameUrlValue;
+        console.log("LazyFrameController: URL value retrieved via fallback:", this.urlValue);
+        callback();
+      }, 2000);
+    } else {
+      // callback();
+      console.log("url value is not available")
+    }
   }
 
   load() {
@@ -126,7 +151,9 @@ export default class LazyFrameController extends Controller {
       .then((responseText) => {
         if (responseText) {
           this.processResponse(responseText);
-          this.loadedValue = true;
+
+          // this.loadedValue = true;
+
           this.hideLoadingIndicator();
 
           // Get the frame ID more reliably
@@ -161,6 +188,7 @@ export default class LazyFrameController extends Controller {
       })
       .finally(() => {
         this.hideLoadingIndicator();
+        this.element.dataset.lazyFrameUrlValue = null;
       });
   }
 
