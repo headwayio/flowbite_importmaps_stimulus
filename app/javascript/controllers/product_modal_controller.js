@@ -1,10 +1,10 @@
 import { Controller } from "@hotwired/stimulus"
+import getTargetElementOfOutlet from "controllers/mixins/get_target_element_of_outlet"
 
 // This controller handles passing product IDs to the update modal
 export default class extends Controller {
   static values = {
     productPath: String,
-    action: String,
   }
 
   connect() {
@@ -16,37 +16,32 @@ export default class extends Controller {
     this.element.removeEventListener('click', this.handleModalWillOpen.bind(this))
   }
 
-  handleModalWillOpen(event) {
-    console.log("actionValue", this.actionValue)
-
-    let modalId;
-    switch (this.actionValue) {
-      case 'show':
-        modalId = 'readProductModal'; break;
-      case 'edit':
-        modalId = 'updateProductModal'; break;
-      case 'destroy':
-        modalId = 'deleteModal'; break;
-    }
-
-    // based on the actionValue, find the correct modalId to act on
-    this.updateLazyFrameUrl(document.getElementById(modalId))
-  }
-
-  updateLazyFrameUrl(modalElement) {
-    if (!modalElement) return
+  handleModalWillOpen(_event) {
+    const modalElement = getTargetElementOfOutlet(this);
 
     // Find the LazyFrameComponent within the modal
-    const lazyFrame = modalElement.querySelector('[data-controller="lazy-frame"]')
+    const lazyFrame = modalElement.querySelector('[data-controller="lazy-frame"]');
     if (!lazyFrame) {
-      // console.error('LazyFrame component not found in modal')
-      return
+      console.error('LazyFrame component not found in modal');
+      return;
     }
 
-    console.log('LazyFrame component found:', lazyFrame)
-    console.log('updating URL:', this.productPathValue)
+    // console.log(`Setting up LazyFrame in modal '${modalElement.id}' with URL: ${this.productPathValue}`);
 
-    // Update the LazyFrameComponent's URL param before it fetches the content using load_on: "visible"
-    lazyFrame.dataset.lazyFrameUrlValue = this.productPathValue
+    // Update the URL immediately
+    // lazyFrame.dataset.lazyFrameUrlValue = this.productPathValue;
+
+    setTimeout(() => {
+      lazyFrame.dataset.lazyFrameUrlValue = this.productPathValue;
+      console.log(`Updated LazyFrame URL to: ${this.productPathValue}`);
+    }, 500);
+
+    // // Dispatch a custom event to trigger a reload
+    // const lazyFrameEvent = new CustomEvent('lazy-frame:request-reload', {
+    //   bubbles: true,
+    //   detail: { url: this.productPathValue }
+    // });
+
+    // lazyFrame.dispatchEvent(lazyFrameEvent);
   }
 }

@@ -15,9 +15,11 @@ import { Controller } from "@hotwired/stimulus";
 export default class LazyFrameController extends Controller {
   static values = {
     url: String,
-    loadOn: { type: String, default: "connect" }, // connect, visible, click, custom
+    loadOn: { type: Object, default: { strategy: "connect" } },
     loaded: { type: Boolean, default: false },
-    frameId: String
+    frameId: String,
+    containingComponentId: String,
+    eventType: { type: String, default: "show" }
   };
 
   static targets = ["frame", "loadingIndicator"];
@@ -30,28 +32,41 @@ export default class LazyFrameController extends Controller {
       this.frameIdValue = this.frameTarget.id;
     }
 
-    // Find the nearest modal container
-    this.modalContainer = this.element.closest('[data-controller~="flowbite--modal-target"]');
+    const loadStrategy = this.loadOnValue.strategy
 
-    if (this.modalContainer) {
-      // Listen for the modal show event
-      this.modalShowHandler = this.handleModalShow.bind(this);
-      this.modalContainer.addEventListener('show', this.modalShowHandler);
-      // console.log("Added show event listener to modal", this.modalContainer.id);
-    }
-
-    if (this.loadOnValue === "connect") {
+    if (loadStrategy === "connect") {
+      console.log("LazyFrameController: loadStrategy is connect");
       this.load();
-    } else if (this.loadOnValue === "visible") {
+    } else if (loadStrategy === "visible") {
+      console.log("LazyFrameController: loadStrategy is visible");
       this.setupIntersectionObserver();
+    } else if (loadStrategy === "event" && this.containingComponentIdValue) {
+      console.log("LazyFrameController: loadStrategy is event, name:", this.eventTypeValue);
+      console.log("LazyFrameController: containingComponentIdValue:", this.containingComponentIdValue);
+      this.containerElement = document.querySelector(`#${this.containingComponentIdValue}`);
+
+      if (!this.containerElement) {
+        console.warn(`Container element with ID ${this.containingComponentIdValue} not found`);
+        return;
+      }
+
+      // Get the event name from eventType value or use default
+      const eventName = this.hasEventTypeValue ? this.eventTypeValue : "show";
+
+      // Listen for the container's event
+      this.containerEventHandler = this.handleContainerEvent.bind(this);
+      this.containerElement.addEventListener(eventName, this.containerEventHandler);
+
+      console.log(`Added ${eventName} event listener to target`, this.containerElement.id);
+    } else {
+      console.log("No valid load_on strategy found, not loading");
     }
-    // "click" and "custom" are handled by the action attribute
   }
 
   disconnect() {
-    // Remove the show event listener if it exists
-    if (this.modalContainer && this.modalShowHandler) {
-      this.modalContainer.removeEventListener('show', this.modalShowHandler);
+    // Remove the event listener if it exists
+    if (this.containerElement && this.containerEventHandler && this.hasEventTypeValue) {
+      this.containerElement.removeEventListener(this.eventTypeValue, this.containerEventHandler);
     }
 
     if (this.observer) {
@@ -61,13 +76,17 @@ export default class LazyFrameController extends Controller {
     }
   }
 
-  handleModalShow(_event) {
-    console.log("Modal show event detected for", this.modalContainer.id);
+  handleContainerEvent(event) {
+    console.log(`Container event ${event.type} detected for`, this.containerElement.id);
 
-    // clear frame content to avoid seeing stale data when loading the modal
+    // clear frame content to avoid seeing stale data when loading the container
+    // component like a modal or drawer
     this.frameTarget.innerHTML = "";
 
-    this.reload();
+    // FIXME: remove intentional slow down for testing
+    this.setupLoad(() => {
+      this.reload();
+    });
   }
 
   setupIntersectionObserver() {
@@ -79,8 +98,9 @@ export default class LazyFrameController extends Controller {
 
     this.observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
-        if (entry.isIntersecting && !this.loadedValue) {
-          // console.log("LazyFrameController: Element is visible, loading content");
+        // if (entry.isIntersecting && !this.loadedValue) {
+        if (entry.isIntersecting) {
+          console.log("LazyFrameController: Element is visible, loading content");
           this.load();
           this.observer.disconnect();
         }
@@ -90,14 +110,41 @@ export default class LazyFrameController extends Controller {
     this.observer.observe(this.element);
   }
 
+  // Temporary testing delay to ensure that the URL value is set before loading.
+  // As long as the setTimeout here is longer than the time it takes to set the
+  // URL value in the other controller, this should work. This is a workaround
+  // for the fact that the URL value is not set immediately when the controller
+  // connects, since we're updating it for every table row whose data we want
+  // to load in the modal.
+  setupLoad(callback) {
+    if (!this.urlValue) {
+      console.log("No internal URL value found, checking data attribute");
+      console.log("Current data attribute URL value", this.element.dataset.lazyFrameUrlValue)
+
+      this.showLoadingIndicator();
+
+      // NOTE: attempt to pull the URL value from the data attr that can be set
+      // by a separate controller by listening for the container event (often on
+      // a modal, but could be drawer or dropdown)
+      setTimeout(() => {
+        this.urlValue = this.element.dataset.lazyFrameUrlValue;
+        console.log("LazyFrameController: URL value retrieved via fallback:", this.urlValue);
+        callback();
+      }, 1500);
+    } else {
+      // callback();
+      console.log("URL value is directly available, calling load() for:", this.urlValue);
+    }
+  }
+
   load() {
     // console.log("LazyFrameController: load() called");
-    if (this.loadedValue) {
-      // console.log("LazyFrameController: Already loaded, skipping load");
-      return;
-    } else {
-      // console.log("LazyFrameController: Loading content");
-    }
+    // if (this.loadedValue) {
+    //   // console.log("LazyFrameController: Already loaded, skipping load");
+    //   return;
+    // } else {
+    //   // console.log("LazyFrameController: Loading content");
+    // }
 
     this.showLoadingIndicator();
 
@@ -126,7 +173,9 @@ export default class LazyFrameController extends Controller {
       .then((responseText) => {
         if (responseText) {
           this.processResponse(responseText);
-          this.loadedValue = true;
+
+          // this.loadedValue = true;
+
           this.hideLoadingIndicator();
 
           // Get the frame ID more reliably
@@ -161,6 +210,10 @@ export default class LazyFrameController extends Controller {
       })
       .finally(() => {
         this.hideLoadingIndicator();
+
+        // Ensure that the URL value is cleared after loading so subsequent
+        // loads don't use the same URL. We need to force a reload!
+        delete this.element.dataset.lazyFrameUrlValue;
       });
   }
 
@@ -191,11 +244,12 @@ export default class LazyFrameController extends Controller {
 
   reload() {
     // console.log("Reloading LazyFrame content");
-    this.loadedValue = false;
+    // this.loadedValue = false;
     this.load();
   }
 
   showLoadingIndicator() {
+    console.log("\nShowing loading indicator\n");
     if (this.hasLoadingIndicatorTarget) {
       this.loadingIndicatorTarget.classList.remove("hidden");
     }

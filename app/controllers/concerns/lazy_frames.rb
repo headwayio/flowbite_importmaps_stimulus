@@ -15,10 +15,10 @@ module LazyFrames
         streams = frames.map do |frame_id, options|
           if options.is_a?(Hash)
             # Handle partial options
-            turbo_stream.update(frame_id, **options)
+            turbo_stream.update(frame_id, **options, method: :morph)
           else
             # Handle template string
-            turbo_stream.update(frame_id, template: options)
+            turbo_stream.update(frame_id, template: options, method: :morph)
           end
         end
 

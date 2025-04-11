@@ -11,7 +11,7 @@ export default class extends Controller {
   }
 
   disconnect() {
-    // console.log("flowbite-trigger superclass disconnected")
+    console.log("flowbite-trigger superclass disconnected")
     this.destroyInstance()
     this.disconnectMorphEvents()
   }
@@ -39,15 +39,21 @@ export default class extends Controller {
 
   destroyInstance() {
     if (this.instance && this.targetElement) {
-      // Only truly destroy if this is the last reference
-      // to this instance (could check reference count in the registry)
-      if (this.instance._options && this.instance._options.id) {
-        console.log("flowbite-trigger destroyInstance", this.instance)
-        ComponentRegistry.removeInstance(this.instance._options.id);
+      const instanceId = this.instance._instanceId;
+
+      if (instanceId) {
+        console.log(`Removing instance reference for ${instanceId}`);
+        ComponentRegistry.removeInstance(instanceId);
+      } else {
+        console.warn("Instance has no _instanceId property");
+
+        // Fallback to direct destroy if we can't use the registry
+        if (typeof this.instance.destroy === 'function') {
+          this.instance.destroy();
+        }
       }
 
-      this.instance.destroyAndRemoveInstance()
-      this.instance = null
+      this.instance = null;
     }
   }
 

@@ -70,7 +70,7 @@ class ProductsController < ApplicationController
       if @product.update(product_params)
         format.turbo_stream {
           turbo_streams = [
-            turbo_stream.replace("product-row-#{@product.id}", partial: "product_row", locals: { product: @product }),
+            turbo_stream.replace("product-row-#{@product.id}", partial: "product_row", locals: { product: @product }, method: :morph),
             turbo_stream.hide_modal("updateProductModal")
           ]
 

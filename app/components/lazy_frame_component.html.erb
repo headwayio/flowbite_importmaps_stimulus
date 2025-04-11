@@ -1,7 +1,9 @@
 <div
   data-controller="lazy-frame"
   data-lazy-frame-url-value="<%= url %>"
-  data-lazy-frame-load-on-value="<%= load_on %>"
+  data-lazy-frame-load-on-value="<%= load_on_json %>"
+  data-lazy-frame-event-type-value="<%= load_on_event_type %>"
+  data-lazy-frame-containing-component-id-value="<%= containing_component_id %>"
   id="<%= frame_id %>_container"
 >
   <%= helpers.turbo_frame_tag frame_id, data: { lazy_frame_target: "frame" } %>
