@@ -108,6 +108,9 @@ export default class extends TriggerController {
       const handler = () => {
         if (this.instance && this.instance.isVisible()) {
           console.log('Menu item clicked, hiding dropdown');
+          // ensure focus is set to the target element before hiding to avoid
+          // retaining focus on the dropdown item causing an aria-hidden violation
+          this.element.focus();
           this.instance.hide();
         }
       };

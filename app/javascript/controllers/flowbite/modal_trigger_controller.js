@@ -89,6 +89,7 @@ export default class extends TriggerController {
         'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
       )
       if (focusable.length > 0) {
+        console.log('No autofocus field found, focusing first focusable element:', focusable[0])
         focusable[0].focus()
         return true;
       }
@@ -156,6 +157,9 @@ export default class extends TriggerController {
         const parentModalId = parentModal.id;
         const parentInstance = window.ComponentRegistry.getInstance(parentModalId);
         if (parentInstance) {
+          // set focus to target element before hiding to prevent focus
+          // retention in current modal (would cause aria violation)
+          this.element.focus();
           parentInstance.hide();
         }
       }
