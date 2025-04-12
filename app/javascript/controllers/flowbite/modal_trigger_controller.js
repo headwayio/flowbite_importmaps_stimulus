@@ -50,35 +50,50 @@ export default class extends TriggerController {
     // Store the element that had focus before the modal opened
     this.#previousFocus = document.activeElement
 
-    // First focus attempt with immediate content
-    this.#attemptFocus();
-
-    // Set up observer for dynamically loaded content
-    const observer = new MutationObserver((mutations) => {
-      // Check if our mutations include any added nodes that might have autofocus
-      const shouldAttemptFocus = mutations.some(mutation =>
-        mutation.addedNodes.length > 0 ||
-        mutation.type === 'attributes' && mutation.attributeName === 'autofocus'
-      );
-
-      if (shouldAttemptFocus) {
-        this.#attemptFocus();
+    // Add a small delay to ensure the DOM is ready before attempting to focus
+    setTimeout(() => {
+      // Safety check to make sure targetElement exists before trying to focus
+      if (!this.targetElement) {
+        console.warn('Target element not available for focus management');
+        return;
       }
-    });
 
-    // Watch for DOM changes inside the modal
-    observer.observe(this.targetElement, {
-      childList: true,    // Watch for added/removed nodes
-      subtree: true,      // Watch the entire subtree
-      attributes: true,   // Watch for attribute changes
-      attributeFilter: ['autofocus'] // Only care about autofocus attribute
-    });
+      // First focus attempt with immediate content
+      this.#attemptFocus();
 
-    // Disconnect after a reasonable time to avoid memory leaks
-    setTimeout(() => observer.disconnect(), 5000);
+      // Set up observer for dynamically loaded content
+      const observer = new MutationObserver((mutations) => {
+        // Check if our mutations include any added nodes that might have autofocus
+        const shouldAttemptFocus = mutations.some(mutation =>
+          mutation.addedNodes.length > 0 ||
+          mutation.type === 'attributes' && mutation.attributeName === 'autofocus'
+        );
+
+        if (shouldAttemptFocus) {
+          this.#attemptFocus();
+        }
+      });
+
+      // Watch for DOM changes inside the modal
+      observer.observe(this.targetElement, {
+        childList: true,    // Watch for added/removed nodes
+        subtree: true,      // Watch the entire subtree
+        attributes: true,   // Watch for attribute changes
+        attributeFilter: ['autofocus'] // Only care about autofocus attribute
+      });
+
+      // Disconnect after a reasonable time to avoid memory leaks
+      setTimeout(() => observer.disconnect(), 5000);
+    }, 50); // Small delay to ensure modal is fully rendered
   }
 
   #attemptFocus() {
+    // Safety check to prevent errors if target element isn't available
+    if (!this.targetElement) {
+      console.warn('Cannot focus elements: modal target is null');
+      return false;
+    }
+
     // Focus the autofocus element or first focusable element
     const autofocusField = this.targetElement.querySelector('[autofocus]')
     if (autofocusField) {
@@ -100,8 +115,13 @@ export default class extends TriggerController {
   #handleHide(event) {
     // Return focus to the element that was focused before the modal opened
     if (this.#previousFocus && typeof this.#previousFocus.focus === 'function') {
-      // console.log('Hide event received, returning focus to:', this.#previousFocus)
-      this.#previousFocus.focus()
+      // Make sure the previously focused element is still in the DOM
+      if (document.body.contains(this.#previousFocus)) {
+        // Use a timeout to ensure DOM updates are complete
+        setTimeout(() => {
+          this.#previousFocus.focus();
+        }, 10);
+      }
     }
   }
 
