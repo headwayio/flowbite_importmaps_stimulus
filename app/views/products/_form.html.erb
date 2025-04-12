@@ -1,75 +1,77 @@
-<%= form_with(model: product) do |f| %>
-  <% if product.errors.any? %>
-    <div id="error_explanation" data-controller="flowbite--dismiss-target" class="p-4 mb-4 text-red-800 border border-red-300 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:border-red-800" role="alert">
-      <div class="flex items-center">
-        <svg class="shrink-0 w-4 h-4 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
-        </svg>
-        <span class="sr-only">Info</span>
-        <h3 class="text-lg font-medium"><%= pluralize(product.errors.count, "error") %> prohibited this product from being saved:</h3>
-      </div>
-      <div class="mt-2 mb-4 text-sm">
-        <ul class="list-disc ml-6">
-          <% product.errors.each do |error| %>
-            <li><%= error.full_message %></li>
-          <% end %>
-        </ul>
-      </div>
-      <div class="flex">
-        <button
-          type="button"
-          class="text-red-800 bg-transparent border border-red-800 hover:bg-red-900 hover:text-white focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center dark:hover:bg-red-600 dark:border-red-600 dark:text-red-500 dark:hover:text-white dark:focus:ring-red-800"
-          data-controller="flowbite--dismiss-trigger"
-          data-flowbite--dismiss-trigger-flowbite--dismiss-target-outlet="#error_explanation"
-          aria-label="Close"
-        >
-          Dismiss
-        </button>
-      </div>
+<div class="relative p-4 w-full max-w-2xl max-h-full">
+  <!-- Modal content -->
+  <div class="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
+    <!-- Modal header -->
+    <div class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
+      <h3 class="text-lg font-semibold text-gray-900 dark:text-white"><%= product.new_record? ? "Add Product" : "Update Product" %></h3>
+      <%= flowbite_modal_trigger_x("#{product.new_record? ? 'createProductModal' : 'updateProductModal'}") %>
     </div>
-  <% end %>
 
-  <div class="grid gap-4 mb-4 sm:grid-cols-2">
-    <div>
-      <%= f.label :name, class: "block mb-2 text-sm font-medium text-gray-900 dark:text-white" %>
-      <%= f.text_field :name, autofocus: true, data: { '1p-ignore': '' }, class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500", placeholder: "Ex. Apple iMac 27\"" %>
-    </div>
-    <div>
-      <%= f.label :brand, class: "block mb-2 text-sm font-medium text-gray-900 dark:text-white" %>
-      <%= f.text_field :brand, class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500", placeholder: "Ex. Apple" %>
-    </div>
-    <div>
-      <%= f.label :price, class: "block mb-2 text-sm font-medium text-gray-900 dark:text-white" %>
-      <%= f.number_field :price, class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500", placeholder: "Ex. $299" %>
-    </div>
-    <div>
-      <%= f.label :category, class: "block mb-2 text-sm font-medium text-gray-900 dark:text-white" %>
-      <%= f.select :category,
-          options_for_select([
-            ["Electronics", "Electronics", {selected: true}],
-            ["TV/Monitors", "TV"],
-            ["PC", "PC"],
-            ["Gaming/Console", "GA"],
-            ["Phones", "PH"]
-          ]),
-          {},
-          {class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"}
-      %>
-    </div>
-    <div class="sm:col-span-2">
-      <%= f.label :description, class: "block mb-2 text-sm font-medium text-gray-900 dark:text-white" %>
-      <%= f.text_area :description,
-                      rows: 5,
-                      class: "block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500",
-                      placeholder: "Write a description..."
-      %>
-    </div>
+    <!-- Modal body -->
+    <%= form_with(model: product) do |f| %>
+      <% if product.errors.any? %>
+        <%= flowbite_dismiss("error_explanation") do %>
+          <div class="flex items-center">
+            <%= icon(:info) %>
+            <span class="sr-only">Info</span>
+            <h3 class="text-lg font-medium"><%= pluralize(product.errors.count, "error") %> prohibited this product from being saved:</h3>
+          </div>
+          <div class="mt-2 mb-4 text-sm">
+            <ul class="list-disc ml-6">
+              <% product.errors.each do |error| %>
+                <li><%= error.full_message %></li>
+              <% end %>
+            </ul>
+          </div>
+          <div class="flex">
+            <%= flowbite_dismiss_trigger("error_explanation") do %>
+              Dismiss
+            <% end %>
+          </div>
+        <% end %>
+      <% end %>
+
+      <div class="grid gap-4 mb-4 sm:grid-cols-2">
+        <div>
+          <%= f.label :name, class: "block mb-2 text-sm font-medium text-gray-900 dark:text-white" %>
+          <%= f.text_field :name, autofocus: true, data: { '1p-ignore': '' }, class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500", placeholder: "Ex. Apple iMac 27\"" %>
+        </div>
+        <div>
+          <%= f.label :brand, class: "block mb-2 text-sm font-medium text-gray-900 dark:text-white" %>
+          <%= f.text_field :brand, class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500", placeholder: "Ex. Apple" %>
+        </div>
+        <div>
+          <%= f.label :price, class: "block mb-2 text-sm font-medium text-gray-900 dark:text-white" %>
+          <%= f.number_field :price, class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500", placeholder: "Ex. $299" %>
+        </div>
+        <div>
+          <%= f.label :category, class: "block mb-2 text-sm font-medium text-gray-900 dark:text-white" %>
+          <%= f.select :category,
+            options_for_select([
+              ["Electronics", "Electronics", {selected: true}],
+              ["TV/Monitors", "TV"],
+              ["PC", "PC"],
+              ["Gaming/Console", "GA"],
+              ["Phones", "PH"]
+            ]),
+            {},
+            {class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"}
+          %>
+        </div>
+        <div class="sm:col-span-2">
+          <%= f.label :description, class: "block mb-2 text-sm font-medium text-gray-900 dark:text-white" %>
+          <%= f.text_area :description,
+                          rows: 5,
+                          class: "block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500",
+                          placeholder: "Write a description..."
+          %>
+        </div>
+      </div>
+
+      <%= button_tag type: 'submit', class: "text-white inline-flex items-center bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800" do %>
+        <%= icon(:plus) %>
+        <%= product.new_record? ? "Add new product" : "Update product" %>
+      <% end %>
+    <% end %>
   </div>
-
-  <%= button_tag type: 'submit', class: "text-white inline-flex items-center bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800" do %>
-    <svg class="mr-1 -ml-1 w-6 h-6" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-      <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
-    </svg>
-    Add new product
-  <% end %>
-<% end %>
+</div>

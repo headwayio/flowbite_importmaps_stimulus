@@ -1,27 +1,47 @@
 class ProductsController < ApplicationController
-  before_action :set_product, only: %i[ show edit update destroy ]
+  include LazyFrames
+
+  before_action :set_product, only: %i[ show update delete_confirm destroy ]
 
   # GET /products or /products.json
   def index
     @products = Product.all
   end
 
-  # GET /products/1 or /products/1.json
   def show
+    render_lazy_frames({
+      "product_show" => {
+        partial: "products/show",
+        locals: { product: @product }
+      }
+    })
   end
 
-  # GET /products/new
-  def new
-    @product = Product.new
+  def delete_confirm
+    render_lazy_frames({
+      "product_delete" => {
+        partial: "products/delete_confirm",
+        locals: { product: @product }
+      }
+    })
   end
 
-  # GET /products/1/edit
-  def edit
-  end
-
+  # GET /products/1 or /products/1.json
   def form
-    @product = params[:id].present? ? Product.find(params[:id]) : Product.new
-    render turbo_stream: turbo_stream.replace("product_form", partial: "form", locals: { product: @product })
+    if params[:id].present?
+      @product = Product.find(params[:id])
+      product_form = "edit_product_form"
+    else
+      @product = Product.new
+      product_form = "new_product_form"
+    end
+
+    render_lazy_frames({
+      product_form => {
+        partial: "products/form",
+        locals: { product: @product }
+      }
+    })
   end
 
   # POST /products or /products.json
@@ -38,7 +58,7 @@ class ProductsController < ApplicationController
         }
       else
         format.turbo_stream {
-          render turbo_stream: turbo_stream.update("product_form_container", partial: "form", locals: { product: @product })
+          render turbo_stream: turbo_stream.update("new_product_form_container", partial: "form", locals: { product: @product })
         }
       end
     end
@@ -48,11 +68,18 @@ class ProductsController < ApplicationController
   def update
     respond_to do |format|
       if @product.update(product_params)
-        format.html { redirect_to @product, notice: "Product was successfully updated." }
-        format.json { render :show, status: :ok, location: @product }
+        format.turbo_stream {
+          turbo_streams = [
+            turbo_stream.replace("product-row-#{@product.id}", partial: "product_row", locals: { product: @product }, method: :morph),
+            turbo_stream.hide_modal("updateProductModal")
+          ]
+
+          render turbo_stream: turbo_streams
+        }
       else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @product.errors, status: :unprocessable_entity }
+        format.turbo_stream {
+          render turbo_stream: turbo_stream.update("edit_product_form_container", partial: "form", locals: { product: @product })
+        }
       end
     end
   end
@@ -62,8 +89,12 @@ class ProductsController < ApplicationController
     @product.destroy!
 
     respond_to do |format|
-      format.html { redirect_to products_path, status: :see_other, notice: "Product was successfully destroyed." }
-      format.json { head :no_content }
+      format.turbo_stream {
+        render turbo_stream: [
+          turbo_stream.hide_modal("deleteModal"),
+          turbo_stream.remove("product-row-#{@product.id}")
+        ]
+      }
     end
   end
 
