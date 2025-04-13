@@ -88,11 +88,11 @@ module FlowbiteHelper
     end
   end
 
-  def product_modal_trigger(target_id, product_path, options = {}, &block)
+  def resource_modal_trigger(target_id, resource_path, options = {}, &block)
     options[:controllers] ||= []
-    options[:controllers] << "product-modal"
+    options[:controllers] << "resource-modal"
     options[:data] ||= {}
-    options[:data]["product-modal-product-path-value"] = product_path
+    options[:data]["resource-modal-path-value"] = resource_path
 
     flowbite_modal_trigger(target_id, options, &block)
   end

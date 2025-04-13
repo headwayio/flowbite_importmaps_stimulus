@@ -1,14 +1,13 @@
 import { Controller } from "@hotwired/stimulus"
 import getTargetElementOfOutlet from "controllers/mixins/get_target_element_of_outlet"
 
-// This controller handles passing product IDs to the update modal
+// Generic controller for handling any resource in modals
 export default class extends Controller {
   static values = {
-    productPath: String,
+    path: String,
   }
 
   connect() {
-    // Listen for click events on each _product_row partial's buttons: show, edit, destroy
     this.element.addEventListener('click', this.handleModalWillOpen.bind(this))
   }
 
@@ -29,7 +28,7 @@ export default class extends Controller {
     // Dispatch a custom event to trigger a reload
     const lazyFrameEvent = new CustomEvent('lazy-frame:request-reload', {
       bubbles: true,
-      detail: { url: this.productPathValue }
+      detail: { url: this.pathValue }
     });
 
     lazyFrame.dispatchEvent(lazyFrameEvent);
