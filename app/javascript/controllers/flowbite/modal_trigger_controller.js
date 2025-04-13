@@ -117,10 +117,9 @@ export default class extends TriggerController {
     if (this.#previousFocus && typeof this.#previousFocus.focus === 'function') {
       // Make sure the previously focused element is still in the DOM
       if (document.body.contains(this.#previousFocus)) {
-        // Use a timeout to ensure DOM updates are complete
-        setTimeout(() => {
-          this.#previousFocus.focus();
-        }, 10);
+        this.#previousFocus.focus();
+      } else {
+        document.body.focus();
       }
     }
   }
