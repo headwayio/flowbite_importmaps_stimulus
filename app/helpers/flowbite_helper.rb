@@ -10,6 +10,7 @@ module FlowbiteHelper
   # @option options [Array] :controllers Additional controllers to add
   # @option options [String] :placement Modal placement
   # @option options [String] :action Toggle/Show/Hide action
+  # @option options [String] :class_override Complete replacement for default classes
   # @yield Block content for the button
   def flowbite_modal(id, options = {}, &block)
     default_options = {
@@ -17,6 +18,14 @@ module FlowbiteHelper
       tabindex: "-1",
       "aria-hidden": "true"
     }
+
+    # Handle class overrides or merging
+    if options[:class_override]
+      options[:class] = options[:class_override]
+      options.delete(:class_override)
+    elsif options[:class].present?
+      options[:class] = TailwindMerge::Merger.new.merge([default_options[:class], options[:class]])
+    end
 
     options = default_options.merge(options)
     options[:id] = id
@@ -32,6 +41,14 @@ module FlowbiteHelper
       class: "text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800",
       action: "toggle"
     }
+
+    # Handle class overrides or merging
+    if options[:class_override]
+      options[:class] = options[:class_override]
+      options.delete(:class_override)
+    elsif options[:class].present?
+      options[:class] = TailwindMerge::Merger.new.merge([default_options[:class], options[:class]])
+    end
 
     options = default_options.merge(options)
 
@@ -72,11 +89,20 @@ module FlowbiteHelper
   def flowbite_modal_trigger_x(target_id, options = {})
     # Default options for X close button
     default_options = {
-      class: "text-gray-400 absolute top-2.5 right-2.5 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white",
+      # Override the default modal trigger button classes entirely for the X button
+      class_override: "text-gray-400 absolute top-2.5 right-2.5 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white",
       action: "hide",
       title: "Close modal",
       aria: { label: "Close modal" }
     }
+
+    # Handle class overrides or merging
+    if options[:class_override]
+      options[:class] = options[:class_override]
+      options.delete(:class_override)
+    elsif options[:class].present?
+      options[:class] = TailwindMerge::Merger.new.merge([default_options[:class], options[:class]])
+    end
 
     # Merge provided options with defaults
     options = default_options.merge(options)
@@ -99,8 +125,16 @@ module FlowbiteHelper
 
   def flowbite_dropdown(id, options = {}, &block)
     default_options = {
-      class: "hidden z-10 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600"
+      class: "hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600"
     }
+
+    # Handle class overrides or merging
+    if options[:class_override]
+      options[:class] = options[:class_override]
+      options.delete(:class_override)
+    elsif options[:class].present?
+      options[:class] = TailwindMerge::Merger.new.merge([default_options[:class], options[:class]])
+    end
 
     options = default_options.merge(options)
     options[:id] = id
@@ -113,8 +147,18 @@ module FlowbiteHelper
   def flowbite_dropdown_trigger(target_id, options = {}, &block)
     default_options = {
       type: "button",
-      class: "text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center"
+      # TODO: do we want to have these default classes for a dropdown?
+      # class: "text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center"
+      class: ""
     }
+
+    # Handle class overrides or merging
+    if options[:class_override]
+      options[:class] = options[:class_override]
+      options.delete(:class_override)
+    elsif options[:class].present?
+      options[:class] = TailwindMerge::Merger.new.merge([default_options[:class], options[:class]])
+    end
 
     options = default_options.merge(options)
 
@@ -155,6 +199,14 @@ module FlowbiteHelper
       role: "alert"
     }
 
+    # Handle class overrides or merging
+    if options[:class_override]
+      options[:class] = options[:class_override]
+      options.delete(:class_override)
+    elsif options[:class].present?
+      options[:class] = TailwindMerge::Merger.new.merge([default_options[:class], options[:class]])
+    end
+
     options = default_options.merge(options)
     options[:id] = id
     options[:data] ||= {}
@@ -169,6 +221,14 @@ module FlowbiteHelper
       class: "text-red-800 bg-transparent border border-red-800 hover:bg-red-900 hover:text-white focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center dark:hover:bg-red-600 dark:border-red-600 dark:text-red-500 dark:hover:text-white dark:focus:ring-red-800",
       aria: { label: "Close" }
     }
+
+    # Handle class overrides or merging
+    if options[:class_override]
+      options[:class] = options[:class_override]
+      options.delete(:class_override)
+    elsif options[:class].present?
+      options[:class] = TailwindMerge::Merger.new.merge([default_options[:class], options[:class]])
+    end
 
     options = default_options.merge(options)
 
@@ -196,6 +256,90 @@ module FlowbiteHelper
       button_tag(options, &block)
     else
       button_tag(options[:text], options)
+    end
+  end
+
+  def flowbite_tooltip(id, options = {}, &block)
+    default_options = {
+      class: "absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700",
+      role: "tooltip"
+    }
+
+    # Handle class overrides or merging
+    if options[:class_override]
+      options[:class] = options[:class_override]
+      options.delete(:class_override)
+    elsif options[:class].present?
+      options[:class] = TailwindMerge::Merger.new.merge([default_options[:class], options[:class]])
+    end
+
+    options = default_options.merge(options)
+    options[:id] = id
+    options[:data] ||= {}
+    options[:data][:controller] = "flowbite--tooltip-target"
+
+    content_tag(:div, options) do
+      (block_given? ? capture(&block) : options[:text].to_s) +
+      content_tag(:div, "", class: "tooltip-arrow", data: { popper_arrow: true })
+    end
+  end
+
+  def flowbite_tooltip_trigger(target_id, options = {}, &block)
+    default_options = {
+      type: "text",
+      class: ""
+    }
+
+    # Handle class overrides or merging
+    if options[:class_override]
+      options[:class] = options[:class_override]
+      options.delete(:class_override)
+    elsif options[:class].present?
+      options[:class] = TailwindMerge::Merger.new.merge([default_options[:class], options[:class]])
+    end
+
+    options = default_options.merge(options)
+
+    # Extract controllers and data attributes
+    controllers = ["flowbite--tooltip-trigger"]
+    controllers.concat(Array(options.delete(:controllers))) if options[:controllers]
+
+    # Setup data attributes
+    data = {
+      controller: controllers.join(" "),
+      "tooltip-target": target_id, # Add the data-tooltip-target attribute
+      "flowbite--tooltip-trigger-flowbite--tooltip-target-outlet": "##{target_id}"
+    }
+
+    # Add placement and trigger-type if specified
+    # placement options: top, bottom, left, right
+    # trigger_type options: hover, click, focus
+    data["flowbite--tooltip-trigger-placement-value"] = options[:placement] if options[:placement]
+    data["flowbite--tooltip-trigger-trigger-type-value"] = options[:trigger_type] if options[:trigger_type]
+
+    # Merge any additional data attributes
+    data.merge!(options[:data] || {})
+
+    # Replace options data with our processed data
+    options[:data] = data
+
+    # Remove our custom options that aren't HTML attributes
+    options.delete(:controllers)
+    options.delete(:placement)
+    options.delete(:trigger_type)
+
+    # Create the element - button or span depending on type
+    if options[:type] == "text" || options[:type] == "span"
+      options.delete(:type)  # Remove type as it's not valid for span
+      content_tag(:span, options) do
+        block_given? ? capture(&block) : options[:text].to_s
+      end
+    else
+      if block_given?
+        button_tag(options, &block)
+      else
+        button_tag(options[:text], options)
+      end
     end
   end
 end

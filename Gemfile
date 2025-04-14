@@ -69,3 +69,4 @@ gem "tailwindcss-rails", "~> 4.2"
 gem "tailwindcss-ruby", "~> 4.1"
 
 gem "view_component"
+gem "tailwind_merge", "~> 1.2"

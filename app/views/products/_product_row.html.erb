@@ -1,8 +1,22 @@
 <tr id="product-row-<%= product.id %>" class="border-b dark:border-gray-700">
-  <td scope="row" class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"><%= product.name %></td>
+  <td scope="row" class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+    <%= flowbite_tooltip_trigger "product_tooltip_#{product.id}", placement: 'right' do %>
+      <%= product.name %>
+    <% end %>
+    <%= flowbite_tooltip "product_tooltip_#{product.id}", class: 'max-w-md whitespace-normal' do %>
+      <%= truncate(product.description, length: 500) %>
+    <% end %>
+  </td>
   <td class="px-4 py-3"><%= product.id %></td>
   <td class="px-4 py-3"><%= product.category %></td>
-  <td class="px-4 py-3"><%= product.brand %></td>
+  <td class="px-4 py-3">
+    <%= flowbite_tooltip_trigger "brand_tooltip_#{product.id}", trigger_type: 'click'  do %>
+      <%= product.brand %>
+    <% end %>
+    <%= flowbite_tooltip "brand_tooltip_#{product.id}" do %>
+      <%= "#{product.brand} is expensive!" %>
+    <% end %>
+  </td>
   <td class="px-4 py-3 max-w-[12rem] truncate"><%= product.description %></td>
   <td class="px-4 py-3"><%= number_to_currency(product.price, unit: "$") %></td>
   <td class="px-4 py-3 flex items-center justify-end">
@@ -10,24 +24,24 @@
       <%= icon(:ellipsis_horizontal) %>
     <% end %>
 
-    <div id="dropdown-<%= product.id %>" data-controller="flowbite--dropdown-target" class="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600">
+    <%= flowbite_dropdown "dropdown-#{product.id}" do %>
       <ul class="py-1 text-sm" aria-labelledby="apple-imac-27-dropdown-button">
         <li>
-          <%= resource_modal_trigger "updateProductModal", form_products_path(id: product), class: "cursor-pointer flex w-full items-center py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white text-gray-700 dark:text-gray-200" do %>
+          <%= resource_modal_trigger "updateProductModal", form_products_path(id: product), class_override: "cursor-pointer flex w-full items-center py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white text-gray-700 dark:text-gray-200" do %>
             <%= icon(:edit) %> Edit
           <% end %>
         </li>
         <li>
-          <%= resource_modal_trigger "readProductModal", product_path(product), class: "cursor-pointer flex w-full items-center py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white text-gray-700 dark:text-gray-200" do %>
+          <%= resource_modal_trigger "readProductModal", product_path(product), class_override: "cursor-pointer flex w-full items-center py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white text-gray-700 dark:text-gray-200" do %>
             <%= icon(:preview) %> Preview
           <% end %>
         </li>
         <li>
-          <%= resource_modal_trigger "deleteModal", delete_confirm_product_path(product), class: "cursor-pointer flex w-full items-center py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 text-red-500 dark:hover:text-red-400" do %>
+          <%= resource_modal_trigger "deleteModal", delete_confirm_product_path(product), class_override: "cursor-pointer flex w-full items-center py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 text-red-500 dark:hover:text-red-400" do %>
             <%= icon(:delete) %> Delete
           <% end %>
         </li>
       </ul>
-    </div>
+    <% end %>
   </td>
 </tr>
